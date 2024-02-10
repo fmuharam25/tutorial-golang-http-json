@@ -1,4 +1,4 @@
-package main
+package web
 
 import (
 	"net/http"
@@ -10,7 +10,7 @@ import (
 
 var db = database.Connect()
 
-func main() {
+func Serve() {
 	//Migrate & Seed
 	db.Migrator().DropTable(&Department{}, &Employee{})
 	db.AutoMigrate(&Department{}, &Employee{})
