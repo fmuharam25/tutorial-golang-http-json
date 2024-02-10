@@ -14,12 +14,29 @@ import (
 func Connect() *gorm.DB {
 
 	// Connect to SQLite3 database
-
-	db, err := gorm.Open(sqlite.Open("database/hsi.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("./hsi.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 	return db
+}
+
+func Migrate() {
+
+	// Migrate & Seed
+	existDept := Connect().Migrator().HasTable(&Department{})
+	existEmp := Connect().Migrator().HasTable(&Employee{})
+	if existDept {
+		Connect().Migrator().DropTable(&Department{})
+	}
+
+	if existEmp {
+		Connect().Migrator().DropTable(&Employee{})
+	}
+
+	Connect().AutoMigrate(&Department{}, &Employee{})
+	DepartmentSeeder(10)
+	EmployeeSeeder(100, 1, 2, 3)
 }
 
 func DepartmentSeeder(max int) {
