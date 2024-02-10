@@ -5,15 +5,18 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	c "github.com/fmuharam25/tutorial-golang-http-json/controllers"
 	. "github.com/fmuharam25/tutorial-golang-http-json/model"
 )
 
 func DepartmentsHandler(w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.PathValue("id"))
+	pathSegments := strings.Split(r.URL.Path, "/")
+	id, _ := strconv.Atoi(pathSegments[len(pathSegments)-1])
 	jsonData := []byte{}
-	err := json.Unmarshal(jsonData, nil)
+	var v map[string]interface{}
+	err := json.Unmarshal(jsonData, &v)
 	dept := &Department{}
 	depts := []Department{}
 	bodyBytes, err := io.ReadAll(r.Body)

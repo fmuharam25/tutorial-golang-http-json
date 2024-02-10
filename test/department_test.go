@@ -14,18 +14,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEmployee(t *testing.T) {
+func TestDeparment(t *testing.T) {
 	database.Migrate()
 	//Define default
-	emp := Employee{ID: 1, Name: "Employee1", DepartmentID: 1}
-	reqBodyPost, _ := json.Marshal(Employee{
-		Name:         "John",
-		DepartmentID: 1,
+	dept := Department{ID: 1, Name: "Department1"}
+	reqBodyPost, _ := json.Marshal(Department{
+		Name: "IT",
 	})
 
-	reqBodyPut, _ := json.Marshal(Employee{
-		Name:         "Doe",
-		DepartmentID: 1,
+	reqBodyPut, _ := json.Marshal(Department{
+		Name: "HR",
 	})
 
 	testCases := []struct {
@@ -35,10 +33,10 @@ func TestEmployee(t *testing.T) {
 		body   []byte
 	}{
 
-		{"GET Employe", "GET", "/employees/1", nil},
-		{"POST Employe", "POST", "/employees", reqBodyPost},
-		{"PUT Employe", "PUT", "/employees/4", reqBodyPut},
-		{"DELETE Employe", "DELETE", "/employees/5", nil},
+		{"GET Department", "GET", "/departments/1", nil},
+		{"POST Department", "POST", "/departments", reqBodyPost},
+		{"PUT Department", "PUT", "/departments/3", reqBodyPut},
+		{"DELETE Department", "DELETE", "/departments/5", nil},
 	}
 
 	for _, testCase := range testCases {
@@ -50,24 +48,24 @@ func TestEmployee(t *testing.T) {
 			req, _ := http.NewRequest(testCase.method, testCase.url, bytes.NewBuffer(testCase.body))
 
 			// Set the response writer to the recorder
-			handler.EmployeesHandler(w, req)
+			handler.DepartmentsHandler(w, req)
 
 			// Assert the response status code
 			assert.Equal(t, http.StatusOK, w.Code)
 
 			// Assert the response body
-			var response Employee
+			var response Department
 			json.Unmarshal(w.Body.Bytes(), &response)
 
 			//Check
 			switch testCase.method {
 			case "GET":
-				assert.Equal(t, emp.ID, response.ID)
-				assert.Equal(t, emp.Name, response.Name)
+				assert.Equal(t, dept.ID, response.ID)
+				assert.Equal(t, dept.Name, response.Name)
 			case "PUT":
-				assert.Equal(t, "Doe", response.Name)
+				assert.Equal(t, "HR", response.Name)
 			case "POST":
-				assert.Equal(t, "John", response.Name)
+				assert.Equal(t, "IT", response.Name)
 			case "DELETE":
 				assert.Equal(t, http.StatusOK, w.Code)
 			}
