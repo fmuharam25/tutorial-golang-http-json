@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"log"
-
 	. "github.com/fmuharam25/tutorial-golang-http-json/model"
 )
 
@@ -12,26 +10,32 @@ func CreateDepartment(name string) (*Department, error) {
 	return dept, err
 }
 
-func GetDepartment(id *int) *Department {
-	dept := &Department{}
-	res := db.Find(dept)
-
-	if id != nil {
-		res = db.First(dept, id)
-	}
-
+func GetDepartments() ([]Department, error) {
+	dept := []Department{}
+	res := db.Find(&dept)
 	if res.Error != nil {
-		log.Fatal(res.Error)
+		return nil, res.Error
 	}
-	if res.RowsAffected > 0 {
-		return dept
-	}
-	return nil
+	return dept, nil
 }
 
-func UpdateDepartment(id uint, name string) error {
-	dept := &Department{ID: id, Name: name}
-	return db.Save(dept).Error
+func GetDepartment(id int) (*Department, error) {
+	dept := &Department{}
+	res := db.First(dept, id)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return dept, nil
+}
+
+func UpdateDepartment(id uint, name string) (*Department, error) {
+	emp := &Department{ID: id, Name: name}
+	res := db.Save(emp)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return emp, res.Error
 }
 
 func DeleteDepartment(id uint) error {

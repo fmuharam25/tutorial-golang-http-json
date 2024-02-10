@@ -1,38 +1,41 @@
 package controllers
 
 import (
-	"log"
-
 	. "github.com/fmuharam25/tutorial-golang-http-json/model"
 )
 
-func CreateEmployee(name string, dept *Department) (*Employee, error) {
-	emp := &Employee{Name: name, DepartmentID: dept.ID}
+func CreateEmployee(name string, deptId uint) (*Employee, error) {
+	emp := &Employee{Name: name, DepartmentID: deptId}
 	err := db.Create(emp).Error
 	return emp, err
 }
 
-func GetEmployee(id *int) *Employee {
-	res := db.Find(&Employee{})
-
-	if id != nil {
-		res = db.First(&Employee{}, id)
-	}
-
+func GetEmployees() ([]Employee, error) {
+	emp := []Employee{}
+	res := db.Find(&emp)
 	if res.Error != nil {
-		log.Fatal(res.Error)
+		return nil, res.Error
 	}
-	if res.RowsAffected > 0 {
-		return &Employee{}
-	}
-	return nil
+	return emp, nil
+}
 
+func GetEmployee(id int) (*Employee, error) {
+	emp := &Employee{}
+	res := db.First(emp, id)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return emp, nil
 }
 
 func UpdateEmployee(id uint, name string, deptId uint) (*Employee, error) {
 	emp := &Employee{ID: id, Name: name, DepartmentID: deptId}
-	err := db.Save(emp).Error
-	return emp, err
+	res := db.Save(emp)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return emp, res.Error
 }
 
 func UpdateBatchEmployee(id []uint, deptId uint) []uint {
