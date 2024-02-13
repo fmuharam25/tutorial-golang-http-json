@@ -21,20 +21,22 @@ func Connect() *gorm.DB {
 	return db
 }
 
+var con = Connect()
+
 func Migrate() {
 
 	// Migrate & Seed
-	existDept := Connect().Migrator().HasTable(&Department{})
-	existEmp := Connect().Migrator().HasTable(&Employee{})
+	existDept := con.Migrator().HasTable(&Department{})
+	existEmp := con.Migrator().HasTable(&Employee{})
 	if existDept {
-		Connect().Migrator().DropTable(&Department{})
+		con.Migrator().DropTable(&Department{})
 	}
 
 	if existEmp {
-		Connect().Migrator().DropTable(&Employee{})
+		con.Migrator().DropTable(&Employee{})
 	}
 
-	Connect().AutoMigrate(&Department{}, &Employee{})
+	con.AutoMigrate(&Department{}, &Employee{})
 	DepartmentSeeder(10)
 	EmployeeSeeder(100, 1, 2, 3)
 }
@@ -45,7 +47,7 @@ func DepartmentSeeder(max int) {
 		departments = append(departments, Department{Name: "Department" + strconv.Itoa(i)})
 	}
 	//Create batch
-	Connect().CreateInBatches(departments, 3)
+	con.CreateInBatches(departments, 3)
 
 }
 
@@ -60,6 +62,6 @@ func EmployeeSeeder(max int, deptIds ...int) {
 	for i := 1; i <= max; i++ {
 		employees = append(employees, Employee{Name: "Employee" + strconv.Itoa(i), DepartmentID: uint(deptIds[randomIndex%i])})
 	}
-	Connect().CreateInBatches(employees, 5)
+	con.CreateInBatches(employees, 5)
 
 }

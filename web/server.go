@@ -1,12 +1,18 @@
-package web
+package main
 
 import (
 	"net/http"
 
+	"github.com/fmuharam25/tutorial-golang-http-json/database"
 	"github.com/fmuharam25/tutorial-golang-http-json/web/handler"
 )
 
-func Serve() {
+func init() {
+	database.Migrate()
+}
+
+func main() {
+
 	//Router
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Employee and Department API V1"))
